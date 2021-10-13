@@ -25,7 +25,10 @@ public class LibraryEventsController {
 
         //invoke kafka producer
         libraryEvent.setLibraryEventType(LibraryEventType.NEW);
-        libraryEventProducer.sendLibraryEvent(libraryEvent);
+        log.info("Antes de enviar pra fila");
+        var library = libraryEventProducer.sendLibraryEvent(libraryEvent);
+        log.info("Os dados são: {}", library.toString());
+        log.info("Depois de enviar pra fila");
         return ResponseEntity.status(HttpStatus.CREATED).body(libraryEvent);
     }
 

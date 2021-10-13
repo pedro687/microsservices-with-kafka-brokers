@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
+
+import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
@@ -22,7 +23,7 @@ public class LibraryEventProducer {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public void sendLibraryEvent(LibraryEvent libraryEvent) throws JsonProcessingException {
+    public ListenableFuture<SendResult<Integer, String>> sendLibraryEvent(LibraryEvent libraryEvent) throws JsonProcessingException {
         var key = libraryEvent.getLibraryEventId();
         var value = objectMapper.writeValueAsString(libraryEvent);
 
@@ -40,6 +41,7 @@ public class LibraryEventProducer {
             }
         });
 
+        return listenableFuture;
     }
 
     private void handleError(Integer key, String value, Throwable ex) {
@@ -55,4 +57,21 @@ public class LibraryEventProducer {
         log.info("MESSAGE SENT SUCESSFULY for the key: {}, and value: {} and partition is {}", key, value, result.getRecordMetadata());
     }
 
+    public SendResult<Integer, String> sendLibraryEventSynchronus(LibraryEvent libraryEvent) throws JsonProcessingException {
+        var key = libraryEvent.getLibraryEventId();
+        var value = objectMapper.writeValueAsString(libraryEvent);
+        SendResult<Integer, String> sendResult = null;
+
+        try {
+            sendResult =  kafkaTemplate.sendDefault(key, value).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sendResult;
+    }
 }
