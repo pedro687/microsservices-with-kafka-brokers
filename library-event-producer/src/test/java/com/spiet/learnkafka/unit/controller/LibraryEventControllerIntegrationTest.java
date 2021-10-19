@@ -37,7 +37,7 @@ public class LibraryEventControllerIntegrationTest {
     LibraryEventProducer libraryEventProducer;
 
     @Test
-    void name() throws Exception {
+    void postLibraryEvent() throws Exception {
         //given
         Book book = Book.builder()
                 .bookId(123)
@@ -58,6 +58,27 @@ public class LibraryEventControllerIntegrationTest {
                     .content(request)
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isCreated());
+        //then
+
+    }
+
+
+    @Test
+    void postLibraryEvent_4xx() throws Exception {
+        //given
+        LibraryEvent libraryEvent = LibraryEvent.builder()
+                .libraryEventId(null)
+                .libraryEventType(LibraryEventType.NEW)
+                .book(null)
+                .build();
+
+        BDDMockito.given(libraryEventProducer.sendLibraryEvent_approach2(any(LibraryEvent.class))).willReturn(null);
+        //when
+        var request = objectMapper.writeValueAsString(libraryEvent);
+        mockMvc.perform(post("/v1/libraryevent")
+                .content(request)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().is4xxClientError());
         //then
 
     }
