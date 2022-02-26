@@ -23,7 +23,9 @@ public class LibraryEventControllerAdvice {
                 .map(fieldError -> fieldError.getField() + " - " + fieldError.getDefaultMessage())
                 .sorted()
                 .collect(Collectors.joining(", "));
+
         log.info("errorMessage : {} ", errorMessage);
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        
     }
 }

@@ -11,9 +11,9 @@ public class AutoCreateConfig {
 
     // creating the config and adding the admin properties on application.yml
     // this is not recommened for production enviroment
+
     @Bean
     public NewTopic booksStoreEvents() {
-
         return TopicBuilder.name("bookstore-events")
                 .partitions(3)
                 .replicas(3)

@@ -29,7 +29,6 @@ public class LibraryEventsControllerIntegrationTest {
     @Autowired
     private TestRestTemplate request;
 
-
     @Autowired
     EmbeddedKafkaBroker embeddedKafkaBroker;
 
